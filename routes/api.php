@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/register', [UserController::class, 'store']);
+
+Route::get('/auth/redirect', [GoogleController::class, 'googleRedirect']);
+Route::get('/auth/callback', [GoogleController::class, 'store']);
