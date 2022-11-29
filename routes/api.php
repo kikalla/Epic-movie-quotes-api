@@ -1,7 +1,5 @@
 <?php
 
-// header('Access-Control-Allow-Origin: *');
-
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
