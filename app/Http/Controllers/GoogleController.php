@@ -11,7 +11,7 @@ class GoogleController extends Controller
 	{
 		$googleUser = Socialite::driver('google')->stateless()->user();
 
-		User::updateOrCreate([
+		$user = User::updateOrCreate([
 			'google_id' => $googleUser->id,
 		], [
 			'username'                 => $googleUser->name,
@@ -20,7 +20,9 @@ class GoogleController extends Controller
 			'google_refresh_token'     => $googleUser->refreshToken,
 		]);
 
-		return redirect(env('APP_FRONT_URL'));
+		$user->markEmailAsVerified();
+
+		return redirect(env('APP_FRONT_URL') . '/verified');
 	}
 
 	public function googleRedirect()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Requests\AddUserRequest;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -14,6 +15,8 @@ class UserController extends Controller
 			'email'                 => $request->email,
 			'password'              => bcrypt($request->password),
 		]);
+
+		event(new Registered($user));
 
 		return $user;
 	}
