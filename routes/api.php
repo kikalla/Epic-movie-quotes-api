@@ -16,9 +16,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', [UserController::class, 'store']);
+Route::controller(UserController::class)->group(function () {
+	Route::post('/register', 'store');
+	Route::post('/login', 'login');
+	Route::get('/logout', 'logout');
+	Route::get('/check-jwt', 'checkJwt')->middleware('JWTauth');
+});
 
-Route::get('/auth/redirect', [GoogleController::class, 'googleRedirect']);
-Route::get('/auth/callback', [GoogleController::class, 'store']);
+Route::controller(GoogleController::class)->group(function () {
+	Route::get('/auth/redirect/register', 'googleRedirectRegister');
+	Route::get('/auth/redirect/login', 'googleRedirectLogin');
+	Route::get('/auth/callback/register', 'store');
+	Route::get('/auth/callback/login', 'login');
+});
 
 Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
