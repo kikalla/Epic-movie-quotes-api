@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/register', [UserController::class, 'store']);
+Route::post('/login', [UserController::class, 'login']);
+Route::get('/check-jwt', [UserController::class, 'checkJwt'])->middleware('JWTauth');
 
 Route::get('/auth/redirect', [GoogleController::class, 'googleRedirect']);
 Route::get('/auth/callback', [GoogleController::class, 'store']);
