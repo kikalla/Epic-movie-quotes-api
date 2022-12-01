@@ -21,7 +21,7 @@ class GoogleController extends Controller
 
 	public function store()
 	{
-		$redirect_url = 'http://127.0.0.1:8000/api/auth/callback/register';
+		$redirect_url = env('APP_URL') . '/auth/callback/register';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
 		$user = User::updateOrCreate([
@@ -40,7 +40,7 @@ class GoogleController extends Controller
 
 	public function login()
 	{
-		$redirect_url = 'http://127.0.0.1:8000/api/auth/callback/login';
+		$redirect_url = env('APP_URL') . '/auth/callback/login';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
 		$payload = [
