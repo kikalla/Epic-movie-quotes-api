@@ -39,8 +39,17 @@ class UserController extends Controller
 			return response()->json('Wrong password', 422);
 		}
 
+		if ($request->remember)
+		{
+			$day = 3;
+		}
+		else
+		{
+			$day = 1;
+		}
+
 		$payload = [
-			'exp' => Carbon::now()->addDay(1)->timestamp,
+			'exp' => Carbon::now()->addDay($day)->timestamp,
 			'uid' => User::where('email', '=', request()->email)->first()->id,
 		];
 
@@ -60,5 +69,12 @@ class UserController extends Controller
 			],
 			200
 		);
+	}
+
+	public function logout(): JsonResponse
+	{
+		$cookie = cookie('access_token', '', 0, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
+
+		return response()->json('success', 200)->withCookie($cookie);
 	}
 }

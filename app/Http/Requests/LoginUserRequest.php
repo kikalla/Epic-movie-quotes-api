@@ -16,6 +16,7 @@ class LoginUserRequest extends FormRequest
 		return [
 			'email'                     => 'required|exists:users,email|email',
 			'password'                  => 'min:8|max:15|required|',
+			'remember'                  => 'boolean',
 		];
 	}
 }
