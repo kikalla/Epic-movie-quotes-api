@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,5 +30,8 @@ Route::controller(GoogleController::class)->group(function () {
 	Route::get('/auth/callback/register', 'store');
 	Route::get('/auth/callback/login', 'login');
 });
+
+Route::post('/forgot/password', [ResetPasswordController::class, 'forgotPassword'])->name('password.reset');
+Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password');
 
 Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
