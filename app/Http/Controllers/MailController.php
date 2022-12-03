@@ -17,6 +17,6 @@ class MailController extends Controller
 			event(new Verified($user));
 		}
 
-		return redirect(env('APP_FRONT_URL') . '/verified');
+		return redirect(config('movie-quotes.app-front-url') . '/verified');
 	}
 }
