@@ -21,7 +21,7 @@ class GoogleController extends Controller
 
 	public function store()
 	{
-		$redirect_url = env('APP_URL') . '/auth/callback/register';
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/register';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
 		$user = User::updateOrCreate([
@@ -35,12 +35,12 @@ class GoogleController extends Controller
 
 		$user->markEmailAsVerified();
 
-		return redirect(env('APP_FRONT_URL') . '/verified');
+		return redirect(config('movie-quotes.app-front-url') . '/verified');
 	}
 
 	public function login()
 	{
-		$redirect_url = env('APP_URL') . '/auth/callback/login';
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/login';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
 		$payload = [
@@ -52,6 +52,6 @@ class GoogleController extends Controller
 
 		$cookie = cookie('access_token', $jwt, 30, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
 
-		return redirect(env('APP_FRONT_URL') . '/news-feed')->withCookie($cookie);
+		return redirect(config('movie-quotes.app-front-url') . '/news-feed')->withCookie($cookie);
 	}
 }
