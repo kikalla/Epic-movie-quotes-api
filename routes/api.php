@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,3 +36,7 @@ Route::post('/forgot/password', [ResetPasswordController::class, 'forgotPassword
 Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password');
 
 Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
+
+Route::post('/movies/add-movie', [MovieController::class, 'store']);
+Route::post('/get-movies', [MovieController::class, 'sendMovies']);
+Route::post('/get-movie', [MovieController::class, 'sendMovie']);
