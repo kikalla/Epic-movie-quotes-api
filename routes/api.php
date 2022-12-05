@@ -40,3 +40,5 @@ Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])-
 Route::post('/movies/add-movie', [MovieController::class, 'store']);
 Route::post('/get-movies', [MovieController::class, 'sendMovies']);
 Route::post('/get-movie', [MovieController::class, 'sendMovie']);
+Route::post('/delete-movie', [MovieController::class, 'deleteMovie']);
+Route::post('/edit-movie', [MovieController::class, 'editMovie']);
