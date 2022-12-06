@@ -28,13 +28,13 @@ class MovieController extends Controller
 
 	public function sendMovies(Request $request)
 	{
-		$movies = Movie::where('user_id', '=', $request->user_id)->get();
+		$movies = Movie::where('user_id', $request->user_id)->get();
 		return $movies;
 	}
 
 	public function sendMovie(Request $request)
 	{
-		$movie = Movie::where('id', '=', $request->movie_id)->first();
+		$movie = Movie::where('id', $request->movie_id)->first();
 		if ($movie)
 		{
 			return $movie;
@@ -44,7 +44,7 @@ class MovieController extends Controller
 
 	public function deleteMovie(Request $request)
 	{
-		$movie = Movie::where('id', '=', $request->movie_id)->delete();
+		$movie = Movie::where('id', $request->movie_id)->delete();
 		if ($movie)
 		{
 			return response('Movie deleted', 200);
@@ -54,7 +54,7 @@ class MovieController extends Controller
 
 	public function editMovie(EditMovieRequest $request)
 	{
-		$movie = Movie::where('id', '=', $request->movie_id)->first();
+		$movie = Movie::where('id', $request->movie_id)->first();
 
 		$movie->setTranslation('title', 'en', $request->title_en);
 		$movie->setTranslation('title', 'ka', $request->title_ka);
