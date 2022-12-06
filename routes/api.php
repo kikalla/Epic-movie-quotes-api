@@ -4,7 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MovieController;
-use App\Http\Controllers\ResetPasswordController;
+use App\Http\ControlleApp\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,8 +37,10 @@ Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword']
 
 Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
 
-Route::post('/movies/add-movie', [MovieController::class, 'store']);
-Route::post('/get-movies', [MovieController::class, 'sendMovies']);
-Route::post('/get-movie', [MovieController::class, 'sendMovie']);
-Route::post('/delete-movie', [MovieController::class, 'deleteMovie']);
-Route::post('/edit-movie', [MovieController::class, 'editMovie']);
+Route::controller(MovieController::class)->group(function () {
+	Route::post('/movies/add-movie', 'store');
+	Route::post('/get-movies', 'sendMovies');
+	Route::post('/get-movie', 'sendMovie');
+	Route::post('/delete-movie', 'deleteMovie');
+	Route::post('/edit-movie', 'editMovie');
+});
