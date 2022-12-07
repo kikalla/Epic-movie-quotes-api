@@ -6,21 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
-class Movie extends Model
+class Quote extends Model
 {
 	use HasFactory, HasTranslations;
 
 	protected $guarded = [];
 
-	public $translatable = ['title', 'director', 'description'];
+	public $translatable = ['quote'];
 
 	public function user()
 	{
 		return $this->hasOne(User::class);
 	}
 
-	public function quote()
+	public function movie()
 	{
-		return $this->hasMany(Quote::class);
+		return $this->hasOne(Movie::class);
+	}
+
+	public function comment()
+	{
+		return $this->hasMany(Movie::class);
 	}
 }
