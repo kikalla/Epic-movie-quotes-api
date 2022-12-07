@@ -28,4 +28,9 @@ class Quote extends Model
 	{
 		return $this->hasMany(Movie::class);
 	}
+
+	public function like()
+	{
+		return $this->hasMany(Like::class);
+	}
 }

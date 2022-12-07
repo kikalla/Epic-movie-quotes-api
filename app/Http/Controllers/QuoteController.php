@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddQuoteRequest;
 use App\Http\Requests\EditQuoteRequest;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Movie;
 use App\Models\Quote;
 use App\Models\User;
@@ -33,10 +34,32 @@ class QuoteController extends Controller
 
 	public function sendQuotes(Request $request)
 	{
+		$userLiked = [];
+		$quoteLikes = [];
+
 		$quotes = Quote::where('movie_id', $request->movie_id)->get();
+
+		foreach ($quotes as $quote)
+		{
+			$quoteLikes[] = count(Like::where('quote_id', $quote->id)->get());
+		}
+
+		foreach ($quotes as $quote)
+		{
+			$likes = Like::where('quote_id', $quote->id)->get();
+			if ($likes->where('user_id', $request->user_id)->first())
+			{
+				$userLiked[] = true;
+			}
+			else
+			{
+				$userLiked[] = false;
+			}
+		}
+
 		if ($quotes)
 		{
-			return $quotes;
+			return [$quotes, $quoteLikes, $userLiked];
 		}
 		return response('Quotes not found', 404);
 	}
