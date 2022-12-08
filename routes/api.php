@@ -5,6 +5,8 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MovieController;
 use App\Http\ControlleApp\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\QuoteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,3 +46,16 @@ Route::controller(MovieController::class)->group(function () {
 	Route::post('/delete-movie', 'deleteMovie');
 	Route::post('/edit-movie', 'editMovie');
 });
+
+Route::controller(QuoteController::class)->group(function () {
+	Route::post('/add-quote', 'store');
+	Route::post('/get-quotes', 'sendQuotes');
+	Route::post('/get-quote', 'sendQuote');
+	Route::post('/edit-quote', 'editQuote');
+	Route::post('/delete-quote', 'deleteQuote');
+	Route::post('/add-comment', 'comment');
+	Route::post('/get-comments', 'sendComments');
+});
+
+Route::post('/like-dislike', [LikeController::class, 'likeDislike']);
+Route::post('/get-likes', [LikeController::class, 'sendLikes']);

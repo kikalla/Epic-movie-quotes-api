@@ -29,7 +29,12 @@ class MovieController extends Controller
 	public function sendMovies(Request $request)
 	{
 		$movies = Movie::where('user_id', $request->user_id)->get();
-		return $movies;
+
+		if ($movies)
+		{
+			return $movies;
+		}
+		return response('Movie not found', 404);
 	}
 
 	public function sendMovie(Request $request)

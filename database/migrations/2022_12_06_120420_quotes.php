@@ -12,14 +12,13 @@ return new class extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('movies', function (Blueprint $table) {
+		Schema::create('quotes', function (Blueprint $table) {
 			$table->id();
 			$table->foreignId('user_id')->constrained()->cascadeOnDelete();
-			$table->json('title');
-			$table->json('director');
-			$table->json('description');
+			$table->foreignId('movie_id')->constrained()->cascadeOnDelete();
+			$table->json('quote');
 			$table->string('image');
-			$table->integer('quote_number')->default(0);
+			$table->integer('comment_number')->default(0);
 			$table->timestamps();
 		});
 	}
