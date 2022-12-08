@@ -37,7 +37,7 @@ Route::controller(GoogleController::class)->group(function () {
 Route::post('/forgot/password', [ResetPasswordController::class, 'forgotPassword'])->name('password.reset');
 Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password');
 
-Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
+Route::get('/email/verify/{token}', [MailController::class, 'verifyEmail'])->name('verification.verify');
 
 Route::controller(MovieController::class)->group(function () {
 	Route::post('/movies/add-movie', 'store');

@@ -6,9 +6,10 @@ use App\Models\User;
 use App\Http\Requests\AddUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use Carbon\Carbon;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -20,7 +21,19 @@ class UserController extends Controller
 			'password'              => bcrypt($request->password),
 		]);
 
-		event(new Registered($user));
+		$token = Str::random(64);
+		DB::table('email_verifications')->updateOrInsert(
+			['email'     => $request->email],
+			[
+				'token'     => $token,
+				'created_at'=> Carbon::now(),
+			]
+		);
+
+		if ($user != null)
+		{
+			MailController::sendSingupEmail($user->username, $user->email, $token);
+		}
 
 		return $user;
 	}
