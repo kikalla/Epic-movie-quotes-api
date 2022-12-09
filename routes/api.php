@@ -25,6 +25,7 @@ Route::controller(UserController::class)->group(function () {
 	Route::post('/login', 'login');
 	Route::get('/logout', 'logout');
 	Route::get('/check-jwt', 'checkJwt')->middleware('JWTauth');
+	Route::post('/edit-user', 'editUser');
 });
 
 Route::controller(GoogleController::class)->group(function () {

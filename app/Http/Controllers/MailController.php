@@ -70,14 +70,17 @@ class MailController extends Controller
 
 	public static function addEmail(Request $request)
 	{
-		$user = User::where('id', jwtUser()->id)->first();
-
-		if ($user->email_verified === 'verified-google')
+		if (jwtUser()->email_verified === 'verified-google')
 		{
 			return 'Cant add email with google registrations';
 		}
 
 		if (DB::table('users_emails')->where('email', $request->email)->first())
+		{
+			return response('Already exists', 403);
+		}
+
+		if (jwtUser()->email === $request->email)
 		{
 			return response('Already exists', 403);
 		}
@@ -142,15 +145,14 @@ class MailController extends Controller
 			return response('Verify first', 401);
 		}
 
-		$user = User::where('id', jwtUser()->id)->first();
-		$oldEmail = $user->email;
+		$oldEmail = jwtUser()->email;
 
 		DB::table('users_emails')->where('email', $email->email)->delete();
 
-		$user->update(['email' => $email->email]);
+		jwtUser()->update(['email' => $email->email]);
 
 		DB::table('users_emails')->insert([
-			'user_id'          => $user->id,
+			'user_id'          => jwtUser()->id,
 			'email'            => $oldEmail,
 			'email_verified'   => 'verified',
 		]);
@@ -181,6 +183,15 @@ class MailController extends Controller
 		$emails[] = jwtUser()->email;
 		$verifieds[] = true;
 
-		return [$emails, $verifieds];
+		if (jwtUser()->email_verified === 'verified-google')
+		{
+			$googleUser = true;
+		}
+		else
+		{
+			$googleUser = false;
+		}
+
+		return [$emails, $verifieds, $googleUser, jwtUser()->username, jwtUser()->image];
 	}
 }

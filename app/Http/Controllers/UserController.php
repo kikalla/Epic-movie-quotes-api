@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Requests\AddUserRequest;
+use App\Http\Requests\EditUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -40,9 +42,17 @@ class UserController extends Controller
 
 	public function login(LoginUserRequest $request): JsonResponse
 	{
+		$email = $request->email;
+		$secondaryEmail = DB::table('users_emails')->where('email', $request->email)->first();
+
+		if ($secondaryEmail)
+		{
+			$email = User::where('id', $secondaryEmail->user_id)->first()->email;
+		}
+
 		$authenticated = auth()->attempt(
 			[
-				'email'    => $request->email,
+				'email'    => $email,
 				'password' => $request->password,
 			]
 		);
@@ -63,7 +73,7 @@ class UserController extends Controller
 
 		$payload = [
 			'exp' => Carbon::now()->addDay($day)->timestamp,
-			'uid' => User::where('email', '=', request()->email)->first()->id,
+			'uid' => User::where('email', '=', $email)->first()->id,
 		];
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
@@ -89,5 +99,33 @@ class UserController extends Controller
 		$cookie = cookie('access_token', '', 0, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
 
 		return response()->json('success', 200)->withCookie($cookie);
+	}
+
+	public function editUser(EditUserRequest $request)
+	{
+		if ($request->file('image'))
+		{
+			$user = User::where('id', jwtUser()->id)->first();
+			$user->setAttribute('image', $request->file('image')->store('usersImages', 'public'));
+			$user->save();
+		}
+		if ($request->username !== jwtUser()->username)
+		{
+			if (!(User::where('username', $request->username)->first()))
+			{
+				jwtUser()->update(['username' => $request->username]);
+			}
+			else
+			{
+				return response('Username already taken', 422);
+			}
+		}
+
+		if ($request->password)
+		{
+			jwtUser()->update(['password'=> Hash::make($request->password)]);
+		}
+
+		return response('User data changed', 200);
 	}
 }
