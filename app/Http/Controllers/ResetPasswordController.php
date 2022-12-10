@@ -35,12 +35,12 @@ class ResetPasswordController extends Controller
 
 	public function resetPassword(ResetPasswordRequest $request)
 	{
-		$check_token = DB::table('password_resets')->where([
+		$checkToken = DB::table('password_resets')->where([
 			'email'=> $request->email,
 			'token'=> $request->token,
 		])->first();
 
-		if (!$check_token)
+		if (!$checkToken)
 		{
 			return response('Invalid token', 422);
 		}

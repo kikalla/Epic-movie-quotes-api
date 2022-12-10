@@ -29,7 +29,7 @@ class NewEmail extends Mailable
 	public function build()
 	{
 		$url = config('movie-quotes.app-url') . '/email/verify/' . $this->token;
-		return $this->from(env('MAIL_USERNAME'))
+		return $this->from(config('movie-quotes.mail-username'))
 		->subject('Welcome')
 		->view('new-email', ['url' => $url, 'username' => $this->username]);
 	}

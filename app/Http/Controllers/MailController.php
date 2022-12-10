@@ -15,18 +15,18 @@ class MailController extends Controller
 {
 	public static function verifyEmail(Request $request)
 	{
-		$check_token = DB::table('email_verifications')->where([
+		$checkToken = DB::table('email_verifications')->where([
 			'token'=> $request->route('token'),
 		])->first();
 
-		if (!$check_token)
+		if (!$checkToken)
 		{
 			return response('Invalid token', 422);
 		}
 
-		if ($request->route('token') === $check_token->token)
+		if ($request->route('token') === $checkToken->token)
 		{
-			$user = User::where('email', $check_token->email);
+			$user = User::where('email', $checkToken->email);
 			if ($user->first())
 			{
 				$user->update([
@@ -34,7 +34,7 @@ class MailController extends Controller
 				]);
 
 				DB::table('email_verifications')->where([
-					'email'=> $check_token->email,
+					'email'=> $checkToken->email,
 				])->delete();
 
 				return redirect(config('movie-quotes.app-front-url') . '/verified');
@@ -42,11 +42,11 @@ class MailController extends Controller
 			else
 			{
 				DB::table('users_emails')->where([
-					'email'=> $check_token->email,
+					'email'=> $checkToken->email,
 				])->update(['email_verified' => 'verified']);
 
 				DB::table('email_verifications')->where([
-					'email'=> $check_token->email,
+					'email'=> $checkToken->email,
 				])->delete();
 
 				return redirect(config('movie-quotes.app-front-url') . '/profile');
