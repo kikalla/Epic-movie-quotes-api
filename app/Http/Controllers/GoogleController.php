@@ -33,7 +33,9 @@ class GoogleController extends Controller
 			'google_refresh_token'     => $googleUser->refreshToken,
 		]);
 
-		$user->markEmailAsVerified();
+		User::where('google_id', $googleUser->id)->update([
+			'email_verified'=> 'verified-google',
+		]);
 
 		return redirect(config('movie-quotes.app-front-url') . '/verified');
 	}

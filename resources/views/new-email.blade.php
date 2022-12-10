@@ -15,8 +15,8 @@
     </div>
    <div style="margin-left: 12rem">
      <p style="color: white; font-size: 1rem; ">Hola {{$username}}!</p>
-     <p style="color: white; font-size: 1rem; margin-bottom: 2rem; margin-top: 2rem " >Thanks for joining Movie quotes! We really appreciate it. Please click the button below to verify your account:</p>
-     <a href="{{$url}}" style="padding: 0.6rem;  background: #E31221; text-decoration: none; color: white; border-radius: 0.5rem">Verify account</a>
+     <p style="color: white; font-size: 1rem; margin-bottom: 2rem; margin-top: 2rem " >Please click the button below to verify your new email:</p>
+     <a href="{{$url}}" style="padding: 0.6rem;  background: #E31221; text-decoration: none; color: white; border-radius: 0.5rem">Verify new email</a>
      <p style="color: white; font-size: 1rem; margin-top: 2rem; margin-bottom: 2rem">If clicking doesn't work, you can try copying and pasting it to your browser:</p>
      <a href="" style="color:#DDCCAA; text-decoration: none">{{$url}}</a>
      <p style="color: white; font-size: 1rem; margin-top: 2rem; margin-bottom: 2rem">If you have any problems, please contact us: support@moviequotes.ge</p>

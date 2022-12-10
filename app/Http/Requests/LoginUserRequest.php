@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\EmailExsits;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginUserRequest extends FormRequest
@@ -14,7 +15,7 @@ class LoginUserRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'email'                     => 'required|exists:users,email|email',
+			'email'                     => ['required', new EmailExsits],
 			'password'                  => 'min:8|max:15|required|',
 			'remember'                  => 'boolean',
 		];

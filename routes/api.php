@@ -4,7 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MovieController;
-use App\Http\ControlleApp\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\QuoteController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +25,7 @@ Route::controller(UserController::class)->group(function () {
 	Route::post('/login', 'login');
 	Route::get('/logout', 'logout');
 	Route::get('/check-jwt', 'checkJwt')->middleware('JWTauth');
+	Route::post('/edit-user', 'editUser');
 });
 
 Route::controller(GoogleController::class)->group(function () {
@@ -37,7 +38,11 @@ Route::controller(GoogleController::class)->group(function () {
 Route::post('/forgot/password', [ResetPasswordController::class, 'forgotPassword'])->name('password.reset');
 Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password');
 
-Route::get('/email/verify/{id}/{hash}', [MailController::class, 'verifyEmail'])->name('verification.verify');
+Route::get('/email/verify/{token}', [MailController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('/add-email', [MailController::class, 'addEmail']);
+Route::post('/delete-email', [MailController::class, 'deleteEmail']);
+Route::post('/make-primary', [MailController::class, 'makePrimary']);
+Route::post('/get-emails', [MailController::class, 'sendEmails']);
 
 Route::controller(MovieController::class)->group(function () {
 	Route::post('/movies/add-movie', 'store');
