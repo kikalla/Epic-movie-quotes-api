@@ -14,7 +14,6 @@ class AddLikeRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'user_id'  => 'required',
 			'quote_id' => 'required',
 		];
 	}

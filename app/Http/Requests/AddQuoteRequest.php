@@ -14,7 +14,6 @@ class AddQuoteRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'user_id'        => 'required',
 			'quote_en'       => 'required',
 			'quote_ka'       => 'required',
 			'movie_id'       => 'required',

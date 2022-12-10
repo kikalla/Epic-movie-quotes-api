@@ -13,7 +13,7 @@ class MovieController extends Controller
 	{
 		$movie = new Movie();
 
-		$movie->setAttribute('user_id', $request->user_id);
+		$movie->setAttribute('user_id', jwtUser()->id);
 		$movie->setTranslation('title', 'en', $request->title_en);
 		$movie->setTranslation('title', 'ka', $request->title_ka);
 		$movie->setTranslation('director', 'en', $request->director_en);
@@ -26,9 +26,9 @@ class MovieController extends Controller
 		return $movie;
 	}
 
-	public function sendMovies(Request $request)
+	public function sendMovies()
 	{
-		$movies = Movie::where('user_id', $request->user_id)->get();
+		$movies = Movie::where('user_id', jwtUser()->id)->get();
 
 		if ($movies)
 		{

@@ -17,7 +17,7 @@ class QuoteController extends Controller
 	{
 		$quote = new Quote();
 
-		$quote->setAttribute('user_id', $request->user_id);
+		$quote->setAttribute('user_id', jwtUser()->id);
 		$quote->setAttribute('movie_id', $request->movie_id);
 		$quote->setTranslation('quote', 'en', $request->quote_en);
 		$quote->setTranslation('quote', 'ka', $request->quote_ka);
@@ -47,7 +47,7 @@ class QuoteController extends Controller
 		foreach ($quotes as $quote)
 		{
 			$likes = Like::where('quote_id', $quote->id)->get();
-			if ($likes->where('user_id', $request->user_id)->first())
+			if ($likes->where('user_id', jwtUser()->id)->first())
 			{
 				$userLiked[] = true;
 			}
@@ -112,7 +112,7 @@ class QuoteController extends Controller
 	{
 		$comment = new Comment();
 
-		$comment->setAttribute('user_id', $request->user_id);
+		$comment->setAttribute('user_id', jwtUser()->id);
 		$comment->setAttribute('quote_id', $request->quote_id);
 		$comment->setAttribute('comment', $request->comment);
 
@@ -123,7 +123,7 @@ class QuoteController extends Controller
 		$quote->setAttribute('comment_number', $commentNumber + 1);
 		$quote->save();
 
-		$username = User::where('id', $request->user_id)->first()->username;
+		$username = User::where('id', jwtUser()->id)->first()->username;
 
 		return [$comment, $username];
 	}
