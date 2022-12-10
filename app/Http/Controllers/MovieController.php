@@ -42,37 +42,49 @@ class MovieController extends Controller
 		$movie = Movie::where('id', $request->movie_id)->first();
 		if ($movie)
 		{
-			return $movie;
+			return [$movie, jwtUser()->image, jwtUser()->username];
 		}
 		return response('Movie not found', 404);
 	}
 
 	public function deleteMovie(Request $request)
 	{
-		$movie = Movie::where('id', $request->movie_id)->delete();
-		if ($movie)
+		$movie = Movie::where('id', $request->movie_id)->first();
+
+		if (jwtUser()->id == $movie->user_id)
 		{
+			$movie->delete();
 			return response('Movie deleted', 200);
 		}
-		return response('Movie not found', 404);
+		else
+		{
+			return response('Wrong user or Movie', 403);
+		}
 	}
 
 	public function editMovie(EditMovieRequest $request)
 	{
 		$movie = Movie::where('id', $request->movie_id)->first();
 
-		$movie->setTranslation('title', 'en', $request->title_en);
-		$movie->setTranslation('title', 'ka', $request->title_ka);
-		$movie->setTranslation('director', 'en', $request->director_en);
-		$movie->setTranslation('director', 'ka', $request->director_ka);
-		$movie->setTranslation('description', 'en', $request->description_en);
-		$movie->setTranslation('description', 'ka', $request->description_ka);
-		if ($request->file('image'))
+		if (jwtUser()->id == $movie->user_id)
 		{
-			$movie->setAttribute('image', $request->file('image')->store('movieImages', 'public'));
-		}
-		$movie->save();
+			$movie->setTranslation('title', 'en', $request->title_en);
+			$movie->setTranslation('title', 'ka', $request->title_ka);
+			$movie->setTranslation('director', 'en', $request->director_en);
+			$movie->setTranslation('director', 'ka', $request->director_ka);
+			$movie->setTranslation('description', 'en', $request->description_en);
+			$movie->setTranslation('description', 'ka', $request->description_ka);
+			if ($request->file('image'))
+			{
+				$movie->setAttribute('image', $request->file('image')->store('movieImages', 'public'));
+			}
+			$movie->save();
 
-		return $movie;
+			return $movie;
+		}
+		else
+		{
+			return response('Wrong user', 403);
+		}
 	}
 }

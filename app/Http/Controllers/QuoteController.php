@@ -67,10 +67,12 @@ class QuoteController extends Controller
 	public function sendQuote(Request $request)
 	{
 		$quote = Quote::where('id', $request->quote_id)->first();
+		$user = User::where('id', $quote->user_id)->first();
+		$movie = Movie::where('id', $quote->movie_id)->first();
 
 		if ($quote)
 		{
-			return $quote;
+			return [$quote, $user->image, $user->username, $movie->user_id];
 		}
 		return response('Quote not found', 404);
 	}
@@ -80,32 +82,42 @@ class QuoteController extends Controller
 		$quote = Quote::where('id', $request->quote_id)->first();
 		$movie = Movie::where('id', $quote->movie_id)->first();
 
-		$quote->delete();
-		$quoteNumber = $movie->quote_number;
-		$movie->setAttribute('quote_number', $quoteNumber - 1);
-		$movie->save();
-
-		if ($quote)
+		if (jwtUser()->id == $quote->user_id || jwtUser()->id == $movie->user_id)
 		{
+			$quote->delete();
+			$quoteNumber = $movie->quote_number;
+			$movie->setAttribute('quote_number', $quoteNumber - 1);
+			$movie->save();
+
 			return response('Quote deleted', 200);
 		}
-		return response('Quote not found', 404);
+		else
+		{
+			return response('Wrong user or quote', 403);
+		}
 	}
 
 	public function editQuote(EditQuoteRequest $request)
 	{
 		$quote = Quote::where('id', $request->quote_id)->first();
 
-		$quote->setTranslation('quote', 'en', $request->quote_en);
-		$quote->setTranslation('quote', 'ka', $request->quote_ka);
-
-		if ($request->file('image'))
+		if (jwtUser()->id == $quote->user_id)
 		{
-			$quote->setAttribute('image', $request->file('image')->store('quoteImages', 'public'));
-		}
-		$quote->save();
+			$quote->setTranslation('quote', 'en', $request->quote_en);
+			$quote->setTranslation('quote', 'ka', $request->quote_ka);
 
-		return $quote;
+			if ($request->file('image'))
+			{
+				$quote->setAttribute('image', $request->file('image')->store('quoteImages', 'public'));
+			}
+			$quote->save();
+
+			return $quote;
+		}
+		else
+		{
+			return response('Wrong user or quote', 403);
+		}
 	}
 
 	public function comment(Request $request)
@@ -123,21 +135,21 @@ class QuoteController extends Controller
 		$quote->setAttribute('comment_number', $commentNumber + 1);
 		$quote->save();
 
-		$username = User::where('id', jwtUser()->id)->first()->username;
-
-		return [$comment, $username];
+		return [$comment, jwtUser()->username, jwtUser()->image];
 	}
 
 	public function sendComments(Request $request)
 	{
 		$usernames = [];
 		$comments = Comment::where('quote_id', $request->quote_id)->get();
+		$userImages = [];
 
 		foreach ($comments as $comment)
 		{
 			$usernames[] = User::where('id', $comment->user_id)->first()->username;
+			$userImages[] = User::where('id', $comment->user_id)->first()->image;
 		}
 
-		return [$comments, $usernames];
+		return [$comments, $usernames, $userImages];
 	}
 }
