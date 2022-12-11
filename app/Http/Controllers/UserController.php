@@ -128,4 +128,9 @@ class UserController extends Controller
 
 		return response('User data changed', 200);
 	}
+
+	public function sendUserInfo()
+	{
+		return [jwtUser()->image, jwtUser()->username];
+	}
 }

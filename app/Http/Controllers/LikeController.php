@@ -10,7 +10,7 @@ class LikeController extends Controller
 {
 	public function likeDislike(AddLikeRequest $request)
 	{
-		$usersLikes = Like::where('user_id', $request->user_id)->get();
+		$usersLikes = Like::where('user_id', jwtUser()->id)->get();
 		$exits = $usersLikes->where('quote_id', $request->quote_id)->first();
 		if ($exits)
 		{
@@ -20,7 +20,7 @@ class LikeController extends Controller
 		else
 		{
 			$like = Like::create([
-				'user_id'  => $request->user_id,
+				'user_id'  => jwtUser()->id,
 				'quote_id' => $request->quote_id,
 			]);
 
@@ -32,7 +32,7 @@ class LikeController extends Controller
 	{
 		$likes = Like::where('quote_id', $request->quote_id)->get();
 
-		if ($likes->where('user_id', $request->user_id)->first())
+		if ($likes->where('user_id', jwtUser()->id)->first())
 		{
 			$user = true;
 		}
