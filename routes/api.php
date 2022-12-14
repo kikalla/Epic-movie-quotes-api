@@ -7,6 +7,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,7 +62,10 @@ Route::controller(QuoteController::class)->group(function () {
 	Route::post('/delete-quote', 'deleteQuote');
 	Route::post('/add-comment', 'comment');
 	Route::post('/get-comments', 'sendComments');
+	Route::post('/news-feed-quotes', 'newsFeedQuotes');
 });
 
 Route::post('/like-dislike', [LikeController::class, 'likeDislike']);
 Route::post('/get-likes', [LikeController::class, 'sendLikes']);
+Route::post('/search', [SearchController::class, 'sendSearchData']);
+Route::post('/search-movies', [SearchController::class, 'sendSearchMovies']);
