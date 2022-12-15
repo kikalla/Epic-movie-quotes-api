@@ -69,11 +69,11 @@ class QuoteController extends Controller
 	public function sendQuote(QuoteRequest $request)
 	{
 		$quote = Quote::where('id', $request->quote_id)->first();
-		$user = User::where('id', $quote->user_id)->first();
-		$movie = Movie::where('id', $quote->movie_id)->first();
 
 		if ($quote)
 		{
+			$user = User::where('id', $quote->user_id)->first();
+			$movie = Movie::where('id', $quote->movie_id)->first();
 			return response([$quote, $user->image, $user->username, $movie->user_id], 200);
 		}
 		return response('Quote not found', 404);
