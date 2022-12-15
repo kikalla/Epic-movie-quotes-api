@@ -24,7 +24,7 @@ class SearchController extends Controller
 				$creatorsImages[] = User::where('id', $movie->user_id)->first()->image;
 				$creatorsusernames[] = User::where('id', $movie->user_id)->first()->username;
 			}
-			return [$movies, $creatorsImages, $creatorsusernames];
+			return response([$movies, $creatorsImages, $creatorsusernames], 200);
 		}
 
 		if (substr($request->search, 0, 1) === '#')
@@ -79,16 +79,16 @@ class SearchController extends Controller
 				$creatorImages[] = $user->image;
 			}
 
-			return [$quotes, $creatorUsernames, $creatorImages,
+			return response([$quotes, $creatorUsernames, $creatorImages,
 				$movieTitles, $quoteLikes, $quoteLikeds,
 				$QuoteComments, $commentUsernames, $commentsImages, $commentsShow,
-			];
+			], 200);
 		}
 	}
 
 	public function sendSearchMovies(Request $request)
 	{
 		$movies = Movie::latest()->where('user_id', jwtUser()->id)->where('title', 'like', '%' . $request->search . '%')->get();
-		return $movies;
+		return response($movies, 200);
 	}
 }

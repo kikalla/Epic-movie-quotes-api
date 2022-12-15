@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddMovieRequest;
 use App\Http\Requests\EditMovieRequest;
+use App\Http\Requests\MovieRequest;
 use App\Models\Movie;
-use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
@@ -23,7 +23,7 @@ class MovieController extends Controller
 		$movie->setAttribute('image', $request->file('image')->store('movieImages', 'public'));
 		$movie->save();
 
-		return $movie;
+		return response($movie, 201);
 	}
 
 	public function sendMovies()
@@ -32,29 +32,29 @@ class MovieController extends Controller
 
 		if ($movies)
 		{
-			return $movies;
+			return response($movies, 200);
 		}
 		return response('Movie not found', 404);
 	}
 
-	public function sendMovie(Request $request)
+	public function sendMovie(MovieRequest $request)
 	{
 		$movie = Movie::where('id', $request->movie_id)->first();
 		if ($movie)
 		{
-			return [$movie, jwtUser()->image, jwtUser()->username];
+			return response([$movie, jwtUser()->image, jwtUser()->username], 200);
 		}
 		return response('Movie not found', 404);
 	}
 
-	public function deleteMovie(Request $request)
+	public function deleteMovie(MovieRequest $request)
 	{
 		$movie = Movie::where('id', $request->movie_id)->first();
 
 		if (jwtUser()->id == $movie->user_id)
 		{
 			$movie->delete();
-			return response('Movie deleted', 200);
+			return response('Movie deleted', 204);
 		}
 		else
 		{
@@ -80,7 +80,7 @@ class MovieController extends Controller
 			}
 			$movie->save();
 
-			return $movie;
+			return response($movie, 204);
 		}
 		else
 		{

@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddQuoteRequest;
+use App\Http\Requests\CommentRequest;
 use App\Http\Requests\EditQuoteRequest;
+use App\Http\Requests\MovieRequest;
+use App\Http\Requests\QuoteRequest;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Movie;
 use App\Models\Quote;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class QuoteController extends Controller
 {
@@ -29,10 +31,10 @@ class QuoteController extends Controller
 		$movie->setAttribute('quote_number', $quoteNumber + 1);
 		$movie->save();
 
-		return $quote;
+		return response($quote, 201);
 	}
 
-	public function sendQuotes(Request $request)
+	public function sendQuotes(MovieRequest $request)
 	{
 		$userLiked = [];
 		$quoteLikes = [];
@@ -59,25 +61,25 @@ class QuoteController extends Controller
 
 		if ($quotes)
 		{
-			return [$quotes, $quoteLikes, $userLiked];
+			return response([$quotes, $quoteLikes, $userLiked], 200);
 		}
 		return response('Quotes not found', 404);
 	}
 
-	public function sendQuote(Request $request)
+	public function sendQuote(QuoteRequest $request)
 	{
 		$quote = Quote::where('id', $request->quote_id)->first();
-		$user = User::where('id', $quote->user_id)->first();
-		$movie = Movie::where('id', $quote->movie_id)->first();
 
 		if ($quote)
 		{
-			return [$quote, $user->image, $user->username, $movie->user_id];
+			$user = User::where('id', $quote->user_id)->first();
+			$movie = Movie::where('id', $quote->movie_id)->first();
+			return response([$quote, $user->image, $user->username, $movie->user_id], 200);
 		}
 		return response('Quote not found', 404);
 	}
 
-	public function deleteQuote(Request $request)
+	public function deleteQuote(QuoteRequest $request)
 	{
 		$quote = Quote::where('id', $request->quote_id)->first();
 		$movie = Movie::where('id', $quote->movie_id)->first();
@@ -89,7 +91,7 @@ class QuoteController extends Controller
 			$movie->setAttribute('quote_number', $quoteNumber - 1);
 			$movie->save();
 
-			return response('Quote deleted', 200);
+			return response('Quote deleted', 204);
 		}
 		else
 		{
@@ -112,7 +114,7 @@ class QuoteController extends Controller
 			}
 			$quote->save();
 
-			return $quote;
+			return response($quote, 204);
 		}
 		else
 		{
@@ -120,7 +122,7 @@ class QuoteController extends Controller
 		}
 	}
 
-	public function comment(Request $request)
+	public function comment(CommentRequest $request)
 	{
 		$comment = new Comment();
 
@@ -135,10 +137,10 @@ class QuoteController extends Controller
 		$quote->setAttribute('comment_number', $commentNumber + 1);
 		$quote->save();
 
-		return [$comment, jwtUser()->username, jwtUser()->image];
+		return response([$comment, jwtUser()->username, jwtUser()->image], 201);
 	}
 
-	public function sendComments(Request $request)
+	public function sendComments(QuoteRequest $request)
 	{
 		$usernames = [];
 		$comments = Comment::where('quote_id', $request->quote_id)->get();
@@ -150,7 +152,7 @@ class QuoteController extends Controller
 			$userImages[] = User::where('id', $comment->user_id)->first()->image;
 		}
 
-		return [$comments, $usernames, $userImages];
+		return response([$comments, $usernames, $userImages], 200);
 	}
 
 	public function newsFeedQuotes()
@@ -205,9 +207,9 @@ class QuoteController extends Controller
 			$creatorImages[] = $user->image;
 		}
 
-		return [$quotes, $creatorUsernames, $creatorImages,
+		return response([$quotes, $creatorUsernames, $creatorImages,
 			$movieTitles, $quoteLikes, $quoteLikeds,
 			$QuoteComments, $commentUsernames, $commentsImages, $commentsShow,
-		];
+		], 200);
 	}
 }

@@ -15,7 +15,7 @@ class LikeController extends Controller
 		if ($exits)
 		{
 			$exits->delete();
-			return response('deleted', 202);
+			return response('deleted', 204);
 		}
 		else
 		{
@@ -41,6 +41,6 @@ class LikeController extends Controller
 			$user = false;
 		}
 
-		return [count($likes), $user];
+		return response([count($likes), $user], 200);
 	}
 }
