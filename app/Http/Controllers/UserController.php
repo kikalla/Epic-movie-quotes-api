@@ -37,7 +37,7 @@ class UserController extends Controller
 			MailController::sendSingupEmail($user->username, $user->email, $token);
 		}
 
-		return $user;
+		return response($user, 201);
 	}
 
 	public function login(LoginUserRequest $request): JsonResponse
@@ -86,10 +86,7 @@ class UserController extends Controller
 	public function checkJwt(): JsonResponse
 	{
 		return response()->json(
-			[
-				'message' => 'authenticated successfully',
-				'user'    => jwtUser(),
-			],
+			['message' => 'authenticated successfully', 'user'    => jwtUser()],
 			200
 		);
 	}
@@ -126,11 +123,11 @@ class UserController extends Controller
 			jwtUser()->update(['password'=> Hash::make($request->password)]);
 		}
 
-		return response('User data changed', 200);
+		return response('User data changed', 204);
 	}
 
 	public function sendUserInfo()
 	{
-		return [jwtUser()->image, jwtUser()->username];
+		return response([jwtUser()->image, jwtUser()->username], 200);
 	}
 }

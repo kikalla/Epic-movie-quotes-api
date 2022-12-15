@@ -22,50 +22,60 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(UserController::class)->group(function () {
-	Route::post('/register', 'store');
-	Route::post('/login', 'login');
-	Route::get('/logout', 'logout');
-	Route::get('/check-jwt', 'checkJwt')->middleware('JWTauth');
-	Route::post('/edit-user', 'editUser');
-	Route::post('/get-user-info', 'sendUserInfo');
+	Route::post('/register', 'store')->name('user.store');
+	Route::post('/login', 'login')->name('login');
+	Route::get('/logout', 'logout')->name('logout');
+	Route::get('/check-jwt', 'checkJwt')->middleware('JWTauth')->name('jwt.check');
+	Route::post('/get-user-info', 'sendUserInfo')->name('user.info');
+	Route::post('/edit-user', 'editUser')->name('user.edit')->middleware(['JWTauth', 'mailVerified']);
 });
 
 Route::controller(GoogleController::class)->group(function () {
-	Route::get('/auth/redirect/register', 'googleRedirectRegister');
-	Route::get('/auth/redirect/login', 'googleRedirectLogin');
-	Route::get('/auth/callback/register', 'store');
-	Route::get('/auth/callback/login', 'login');
+	Route::get('/auth/redirect/register', 'googleRedirectRegister')->name('user.google_register');
+	Route::get('/auth/redirect/login', 'googleRedirectLogin')->name('user.google_login');
+	Route::get('/auth/callback/register', 'store')->name('user.google_registe_callback');
+	Route::get('/auth/callback/login', 'login')->name('user.google_login_callback');
 });
 
 Route::post('/forgot/password', [ResetPasswordController::class, 'forgotPassword'])->name('password.reset');
 Route::post('/reset/password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password');
 
-Route::get('/email/verify/{token}', [MailController::class, 'verifyEmail'])->name('verification.verify');
-Route::post('/add-email', [MailController::class, 'addEmail']);
-Route::post('/delete-email', [MailController::class, 'deleteEmail']);
-Route::post('/make-primary', [MailController::class, 'makePrimary']);
-Route::post('/get-emails', [MailController::class, 'sendEmails']);
+Route::controller(MailController::class)->group(function () {
+	Route::get('/email/verify/{token}', 'verifyEmail')->name('verification.verify');
+	Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
+		Route::post('/add-email', 'addEmail')->name('email.add');
+		Route::post('/get-emails', 'sendEmails')->name('email.get');
+		Route::post('/delete-email', 'deleteEmail')->name('email.delete');
+		Route::post('/make-primary', 'makePrimary')->name('email.make_primary');
+	});
+});
 
 Route::controller(MovieController::class)->group(function () {
-	Route::post('/movies/add-movie', 'store');
-	Route::post('/get-movies', 'sendMovies');
-	Route::post('/get-movie', 'sendMovie');
-	Route::post('/delete-movie', 'deleteMovie');
-	Route::post('/edit-movie', 'editMovie');
+	Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
+		Route::post('/movies/add-movie', 'store')->name('movie.store');
+		Route::post('/get-movies', 'sendMovies')->name('movies.send');
+		Route::post('/get-movie', 'sendMovie')->name('movie.send');
+		Route::post('/delete-movie', 'deleteMovie')->name('movie.delete');
+		Route::post('/edit-movie', 'editMovie')->name('movie.edit');
+	});
 });
 
 Route::controller(QuoteController::class)->group(function () {
-	Route::post('/add-quote', 'store');
-	Route::post('/get-quotes', 'sendQuotes');
-	Route::post('/get-quote', 'sendQuote');
-	Route::post('/edit-quote', 'editQuote');
-	Route::post('/delete-quote', 'deleteQuote');
-	Route::post('/add-comment', 'comment');
-	Route::post('/get-comments', 'sendComments');
-	Route::post('/news-feed-quotes', 'newsFeedQuotes');
+	Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
+		Route::post('/add-quote', 'store')->name('quote.store');
+		Route::post('/get-quotes', 'sendQuotes')->name('quotes.send');
+		Route::post('/get-quote', 'sendQuote')->name('quote.send');
+		Route::post('/edit-quote', 'editQuote')->name('quote.edit');
+		Route::post('/delete-quote', 'deleteQuote')->name('quote.delete');
+		Route::post('/add-comment', 'comment')->name('comment.store');
+		Route::post('/get-comments', 'sendComments')->name('comments.send');
+		Route::post('/news-feed-quotes', 'newsFeedQuotes')->name('news_feed');
+	});
 });
 
-Route::post('/like-dislike', [LikeController::class, 'likeDislike']);
-Route::post('/get-likes', [LikeController::class, 'sendLikes']);
-Route::post('/search', [SearchController::class, 'sendSearchData']);
-Route::post('/search-movies', [SearchController::class, 'sendSearchMovies']);
+Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
+	Route::post('/like-dislike', [LikeController::class, 'likeDislike'])->name('like_dislike');
+	Route::post('/get-likes', [LikeController::class, 'sendLikes'])->name('likes.send');
+	Route::post('/search', [SearchController::class, 'sendSearchData'])->name('search');
+	Route::post('/search-movies', [SearchController::class, 'sendSearchMovies'])->name('search_movies');
+});

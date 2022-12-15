@@ -115,16 +115,16 @@ class MailController extends Controller
 
 		if (!$email)
 		{
-			return 'Email not exists or its primary';
+			return response('Email not exists or its primary', 422);
 		}
 		if (jwtUser()->id == $email->user_id)
 		{
 			DB::table('users_emails')->where('email', $request->email)->delete();
-			return 'Email deleted';
+			return response('Email deleted', 204);
 		}
 		else
 		{
-			return 'Wrong user';
+			return response('Wrong user', 403);
 		}
 	}
 
@@ -157,7 +157,7 @@ class MailController extends Controller
 			'email_verified'   => 'verified',
 		]);
 
-		return 'Success';
+		return response('Success', 200);
 	}
 
 	public function sendEmails()
@@ -192,6 +192,6 @@ class MailController extends Controller
 			$googleUser = false;
 		}
 
-		return [$emails, $verifieds, $googleUser, jwtUser()->username, jwtUser()->image];
+		return response([$emails, $verifieds, $googleUser, jwtUser()->username, jwtUser()->image], 200);
 	}
 }
