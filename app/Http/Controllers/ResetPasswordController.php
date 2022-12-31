@@ -25,10 +25,15 @@ class ResetPasswordController extends Controller
 		);
 		$username = User::where('email', $request->email)->first()->username;
 
-		Mail::send('email-reset-password', ['token' => $token, 'username' => $username, 'email' => $request->email], function ($message) use ($request) {
-			$message->from(config('movie-quotes.mail-username'), 'Epic Movie Quotes');
-			$message->to($request->email)->subject('Reset Password');
-		});
+		Mail::send(
+			'email-reset-password',
+			['token' => $token, 'username' => $username, 'email' => $request->email],
+			function ($message) use ($request) {
+				$message->from(config('movie-quotes.mail-username'), 'Epic Movie Quotes');
+				$message->to($request->email)
+				->subject('Reset Password');
+			}
+		);
 
 		return response('success', 200);
 	}

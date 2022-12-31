@@ -78,7 +78,7 @@ class UserController extends Controller
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
 
-		$cookie = cookie('access_token', $jwt, 30, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
+		$cookie = cookie('access_token', $jwt, $day * 1440, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
 
 		return response()->json('success', 200)->withCookie($cookie);
 	}
@@ -128,6 +128,13 @@ class UserController extends Controller
 
 	public function sendUserInfo()
 	{
-		return response([jwtUser()->image, jwtUser()->username], 200);
+		if (jwtUser() !== null)
+		{
+			return response([jwtUser()->image, jwtUser()->username], 200);
+		}
+		else
+		{
+			return response('Unauthorized', 401);
+		}
 	}
 }

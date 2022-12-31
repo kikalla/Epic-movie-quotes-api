@@ -11,12 +11,16 @@ class GoogleController extends Controller
 {
 	public function googleRedirectRegister()
 	{
-		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => 'http://127.0.0.1:8000/api/auth/callback/register'])->redirect();
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/register';
+
+		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => $redirect_url])->redirect();
 	}
 
 	public function googleRedirectLogin()
 	{
-		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => 'http://127.0.0.1:8000/api/auth/callback/login'])->redirect();
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/login';
+
+		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => $redirect_url])->redirect();
 	}
 
 	public function store()
@@ -45,10 +49,17 @@ class GoogleController extends Controller
 		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/login';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
-		$payload = [
-			'exp' => Carbon::now()->addDay(1)->timestamp,
-			'uid' => User::where('email', '=', $googleUser->email)->first()->id,
-		];
+		if (User::where('email', '=', $googleUser->email)->first() != null)
+		{
+			$payload = [
+				'exp' => Carbon::now()->addDay(1)->timestamp,
+				'uid' => User::where('email', '=', $googleUser->email)->first()->id,
+			];
+		}
+		else
+		{
+			return response('Email not registered', 422);
+		}
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
 

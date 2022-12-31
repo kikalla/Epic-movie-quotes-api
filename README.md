@@ -59,6 +59,11 @@ cp .env.example .env
 ```
 And now you should provide **.env** file all the necessary environment variables:
 
+5\. We need to storage link for public images.
+```sh
+php artisan storage:link
+```
+
 #
 **MYSQL:**
 >DB_CONNECTION=mysql
