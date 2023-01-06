@@ -11,18 +11,27 @@ class GoogleController extends Controller
 {
 	public function googleRedirectRegister()
 	{
-		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => 'http://127.0.0.1:8000/api/auth/callback/register'])->redirect();
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/register';
+
+		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => $redirect_url])->redirect();
 	}
 
 	public function googleRedirectLogin()
 	{
-		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => 'http://127.0.0.1:8000/api/auth/callback/login'])->redirect();
+		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/login';
+
+		return Socialite::driver('google')->stateless()->with(['prompt' => 'select_account', 'redirect_uri' => $redirect_url])->redirect();
 	}
 
 	public function store()
 	{
 		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/register';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
+
+		if (User::where('email', '=', $googleUser->email)->first())
+		{
+			return redirect(config('movie-quotes.app-front-url') . '/register?error=Email%20already%20registered');
+		}
 
 		$user = User::updateOrCreate([
 			'google_id' => $googleUser->id,
@@ -45,10 +54,17 @@ class GoogleController extends Controller
 		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/login';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
-		$payload = [
-			'exp' => Carbon::now()->addDay(1)->timestamp,
-			'uid' => User::where('email', '=', $googleUser->email)->first()->id,
-		];
+		if (User::where('email', '=', $googleUser->email)->first() != null)
+		{
+			$payload = [
+				'exp' => Carbon::now()->addDay(1)->timestamp,
+				'uid' => User::where('email', '=', $googleUser->email)->first()->id,
+			];
+		}
+		else
+		{
+			return redirect(config('movie-quotes.app-front-url') . '/login?error=Register%20with%20google%20first');
+		}
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
 

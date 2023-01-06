@@ -72,7 +72,7 @@ class MailController extends Controller
 	{
 		if (jwtUser()->email_verified === 'verified-google')
 		{
-			return 'Cant add email with google registrations';
+			return response('Cant add email with google registrations', 403);
 		}
 
 		if (DB::table('users_emails')->where('email', $request->email)->first())
