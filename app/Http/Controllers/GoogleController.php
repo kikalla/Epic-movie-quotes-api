@@ -28,6 +28,11 @@ class GoogleController extends Controller
 		$redirect_url = config('movie-quotes.app-url') . '/auth/callback/register';
 		$googleUser = Socialite::driver('google')->redirectUrl($redirect_url)->stateless()->user();
 
+		if (User::where('email', '=', $googleUser->email)->first())
+		{
+			return redirect(config('movie-quotes.app-front-url') . '/register?error=Email%20already%20registered');
+		}
+
 		$user = User::updateOrCreate([
 			'google_id' => $googleUser->id,
 		], [
@@ -58,7 +63,7 @@ class GoogleController extends Controller
 		}
 		else
 		{
-			return response('Email not registered', 422);
+			return redirect(config('movie-quotes.app-front-url') . '/login?error=Register%20with%20google%20first');
 		}
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
