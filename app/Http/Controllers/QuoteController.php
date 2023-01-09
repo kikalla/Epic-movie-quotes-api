@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationCreated;
 use App\Http\Requests\AddQuoteRequest;
 use App\Http\Requests\CommentRequest;
 use App\Http\Requests\EditQuoteRequest;
@@ -10,6 +11,7 @@ use App\Http\Requests\QuoteRequest;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Movie;
+use App\Models\Notification;
 use App\Models\Quote;
 use App\Models\User;
 
@@ -136,6 +138,17 @@ class QuoteController extends Controller
 		$commentNumber = $quote->comment_number;
 		$quote->setAttribute('comment_number', $commentNumber + 1);
 		$quote->save();
+		if (jwtUser()->id !== $quote->user_id)
+		{
+			$notification = Notification::create([
+				'type'       => 'comment',
+				'from_id'    => jwtUser()->id,
+				'to_id'      => $quote->user_id,
+				'quote_id'   => $request->quote_id,
+				'is_read'    => false,
+			]);
+			event((new NotificationCreated($notification->load('from')))->dontBroadcastToCurrentUser());
+		}
 
 		return response([$comment, jwtUser()->username, jwtUser()->image], 201);
 	}

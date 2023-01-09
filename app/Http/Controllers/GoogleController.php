@@ -68,7 +68,7 @@ class GoogleController extends Controller
 
 		$jwt = JWT::encode($payload, config('auth.jwt_secret'), 'HS256');
 
-		$cookie = cookie('access_token', $jwt, 30, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
+		$cookie = cookie('access_token', $jwt, 1440, '/', config('auth.front_end_top_level_domain'), true, true, false, 'Strict');
 
 		return redirect(config('movie-quotes.app-front-url') . '/news-feed')->withCookie($cookie);
 	}

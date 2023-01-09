@@ -6,6 +6,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
@@ -78,4 +79,13 @@ Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
 	Route::post('/get-likes', [LikeController::class, 'sendLikes'])->name('likes.send');
 	Route::post('/search', [SearchController::class, 'sendSearchData'])->name('search');
 	Route::post('/search-movies', [SearchController::class, 'sendSearchMovies'])->name('search_movies');
+});
+
+Route::controller(NotificationController::class)->group(function () {
+	Route::middleware(['JWTauth', 'mailVerified'])->group(function () {
+		Route::post('/get-notifications', 'sendNotifications')->name('notifications.send');
+		Route::post('/read-notification', 'readNotification')->name('notification.update');
+		Route::post('/read-notifications', 'readAllNotifications')->name('notifications.update');
+		Route::post('/delete-notifications', 'deleteAllNotifications')->name('notifications.delete');
+	});
 });
