@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationCreated;
 use App\Http\Requests\AddQuoteRequest;
 use App\Http\Requests\CommentRequest;
 use App\Http\Requests\EditQuoteRequest;
@@ -146,6 +147,7 @@ class QuoteController extends Controller
 				'quote_id'   => $request->quote_id,
 				'is_read'    => false,
 			]);
+			event((new NotificationCreated($notification->load('from')))->dontBroadcastToCurrentUser());
 		}
 
 		return response([$comment, jwtUser()->username, jwtUser()->image], 201);
